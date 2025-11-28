@@ -14,10 +14,19 @@
         <item name="android:windowBackground">@color/black</item>
         <!-- Customize your theme here. -->
         <item name="actionBarStyle">@style/Theme.TheClock.ActionBar</item>
+        <item name="actionOverflowMenuStyle">@style/Theme.TheClock.OverflowMenu</item>
     </style>
 
     <style name="Theme.TheClock.ActionBar" parent="Widget.MaterialComponents.ActionBar.Solid">
         <item name="background">@color/black</item>
         <item name="elevation">0dp</item>
+    </style>
+
+    <style name="Theme.TheClock.OverflowMenu" parent="Widget.MaterialComponents.PopupMenu.Overflow">
+        <item name="android:overlapAnchor">false</item>
+        <item name="android:dropDownVerticalOffset">16dp</item>
+        <item name="android:dropDownHorizontalOffset">-16dp</item>
+        <!-- Ensure background is black to match theme if needed, though default usually works -->
+        <item name="android:popupBackground">@drawable/menu_background</item>
     </style>
 </resources>

@@ -111,7 +111,7 @@ public class ClockView extends View {
         // Capsule dimensions
         // Anchor to seconds ring (Right) and shorten from center (Left)
         float capsuleRight = centerX + r;
-        float capsuleLeft = centerX + 90f; // Widened even more from left (was 120f)
+        float capsuleLeft = centerX + 120f; // Adjusted to +120f as requested
 
         // --- 1. Draw Minutes Ring (Inner) ---
         // Drawn first so Capsule Background can cover it
@@ -155,8 +155,8 @@ public class ClockView extends View {
         // Position at minutes radius
         float textX = centerX + (minutesRadius - 50f);
 
-        // Adjust based on user's request (move back right)
-        textX -= 65f;
+        // Adjust based on user's request (move right)
+        textX -= 50f;
 
         canvas.drawText(String.format(Locale.US, "%02d", minute), textX, centerY + minuteOffset, minutePaint);
 
