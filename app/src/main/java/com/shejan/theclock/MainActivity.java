@@ -8,7 +8,38 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = findViewById(
+                R.id.bottom_navigation);
+        bottomNav.setOnItemSelectedListener(navListener);
+
+        // Set default fragment
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new WorldClockFragment()).commit();
+            bottomNav.setSelectedItemId(R.id.navigation_world_clock);
+        }
     }
+
+    private final com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener navListener = item -> {
+        androidx.fragment.app.Fragment selectedFragment = null;
+        int itemId = item.getItemId();
+        if (itemId == R.id.navigation_alarm) {
+            selectedFragment = new AlarmFragment();
+        } else if (itemId == R.id.navigation_world_clock) {
+            selectedFragment = new WorldClockFragment();
+        } else if (itemId == R.id.navigation_timer) {
+            selectedFragment = new TimerFragment();
+        } else if (itemId == R.id.navigation_stopwatch) {
+            selectedFragment = new StopwatchFragment();
+        }
+
+        if (selectedFragment != null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    selectedFragment).commit();
+        }
+        return true;
+    };
 
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
@@ -23,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
             android.widget.Toast.makeText(this, "Screen Saver clicked", android.widget.Toast.LENGTH_SHORT).show();
             return true;
         } else if (id == R.id.action_settings) {
-            android.widget.Toast.makeText(this, "Settings clicked", android.widget.Toast.LENGTH_SHORT).show();
+            android.content.Intent intent = new android.content.Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         } else if (id == R.id.action_help) {
             android.widget.Toast.makeText(this, "Help clicked", android.widget.Toast.LENGTH_SHORT).show();
