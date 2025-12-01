@@ -30,6 +30,7 @@ public class ClockView extends View {
     private float mClockSize;
     private final Calendar mCalendar = Calendar.getInstance();
     private final RectF boxRect = new RectF();
+    private boolean is24HourFormat = false;
 
     public ClockView(Context context) {
         super(context);
@@ -82,6 +83,11 @@ public class ClockView extends View {
         // Match Swing: clockSize = 360, window = 600. Ratio ~0.6
         // But we want it to fill screen nicely.
         mClockSize = Math.min(mWidth, mHeight) * 0.65f;
+    }
+
+    public void set24HourFormat(boolean is24HourFormat) {
+        this.is24HourFormat = is24HourFormat;
+        invalidate();
     }
 
     @Override
@@ -145,7 +151,17 @@ public class ClockView extends View {
         hourPaint.setTextSize(160f);
         Paint.FontMetrics fm = hourPaint.getFontMetrics();
         float hourOffset = (fm.descent - fm.ascent) / 2f - fm.descent;
-        canvas.drawText(String.valueOf(hour), centerX, centerY + hourOffset, hourPaint);
+
+        int displayHour = hour;
+        if (!is24HourFormat) {
+            if (displayHour > 12) {
+                displayHour -= 12;
+            } else if (displayHour == 0) {
+                displayHour = 12;
+            }
+        }
+
+        canvas.drawText(String.valueOf(displayHour), centerX, centerY + hourOffset, hourPaint);
 
         // Minute Text (aligned with minutes ring)
         minutePaint.setTextSize(70f);

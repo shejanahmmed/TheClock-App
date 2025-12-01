@@ -1,15 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/view_flipper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Timers"
-        android:textColor="@android:color/white"
-        android:textSize="24sp" />
+    <!-- Setup View -->
+    <RelativeLayout
+        android:id="@+id/setup_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/input_time_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
+            android:text="00h 00m 00s"
+            android:textColor="@android:color/white"
+            android:textSize="50sp"
+            android:fontFamily="sans-serif-light" />
+
+        <GridLayout
+            android:id="@+id/keypad_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:columnCount="3"
+            android:rowCount="4"
+            android:useDefaultMargins="true">
+
+            <Button style="@style/KeypadButton" android:text="1" android:tag="1"/>
+            <Button style="@style/KeypadButton" android:text="2" android:tag="2"/>
+            <Button style="@style/KeypadButton" android:text="3" android:tag="3"/>
+            <Button style="@style/KeypadButton" android:text="4" android:tag="4"/>
+            <Button style="@style/KeypadButton" android:text="5" android:tag="5"/>
+            <Button style="@style/KeypadButton" android:text="6" android:tag="6"/>
+            <Button style="@style/KeypadButton" android:text="7" android:tag="7"/>
+            <Button style="@style/KeypadButton" android:text="8" android:tag="8"/>
+            <Button style="@style/KeypadButton" android:text="9" android:tag="9"/>
+            <Button style="@style/KeypadButton" android:text="00" android:tag="00"/>
+            <Button style="@style/KeypadButton" android:text="0" android:tag="0"/>
+            <ImageButton
+                android:id="@+id/btn_backspace"
+                style="@style/KeypadButton"
+                android:src="@drawable/ic_backspace"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="@android:color/white" />
+        </GridLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_start_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="32dp"
+            android:src="@drawable/ic_play"
+            app:backgroundTint="#5C7CFA"
+            app:tint="@android:color/white"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+
+    <!-- Countdown View -->
+    <RelativeLayout
+        android:id="@+id/countdown_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_centerInParent="true"
+            android:indeterminate="false"
+            android:max="10000"
+            android:progress="10000"
+            android:progressDrawable="@drawable/circular_progress"
+            style="?android:attr/progressBarStyleHorizontal" />
+
+        <TextView
+            android:id="@+id/countdown_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="00:00:00"
+            android:textColor="@android:color/white"
+            android:textSize="60sp"
+            android:fontFamily="sans-serif-light" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="48dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:src="@drawable/ic_stop"
+                app:backgroundTint="#D32F2F"
+                app:tint="@android:color/white" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_pause_resume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:src="@drawable/ic_pause"
+                app:backgroundTint="#5C7CFA"
+                app:tint="@android:color/white" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</ViewFlipper>

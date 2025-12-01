@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="600dp"
+    android:height="600dp"
+    android:viewportWidth="600"
+    android:viewportHeight="600">
+
+    <!-- Center: 300, 300 -->
+    <!-- Minute Ring Radius: ~200 (Inner) -->
+    <!-- Numbers arranged Counter-Clockwise -->
+    <!-- 0 at 3 o'clock (Right) -->
+
+    <group android:pivotX="300" android:pivotY="300">
+        
+        <!-- Spikes (60 ticks) -->
+        <!-- Main Ticks (Every 5 mins) -->
+        <path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" />
+        <group android:rotation="30" android:pivotX="300" android:pivotY="300"><path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" /></group>
+        <group android:rotation="60" android:pivotX="300" android:pivotY="300"><path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" /></group>
+        <group android:rotation="90" android:pivotX="300" android:pivotY="300"><path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" /></group>
+        <group android:rotation="120" android:pivotX="300" android:pivotY="300"><path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" /></group>
+        <group android:rotation="150" android:pivotX="300" android:pivotY="300"><path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" /></group>
+        <group android:rotation="180" android:pivotX="300" android:pivotY="300"><path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" /></group>
+        <group android:rotation="210" android:pivotX="300" android:pivotY="300"><path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" /></group>
+        <group android:rotation="240" android:pivotX="300" android:pivotY="300"><path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" /></group>
+        <group android:rotation="270" android:pivotX="300" android:pivotY="300"><path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" /></group>
+        <group android:rotation="300" android:pivotX="300" android:pivotY="300"><path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" /></group>
+        <group android:rotation="330" android:pivotX="300" android:pivotY="300"><path android:fillColor="#FFFFFFFF" android:pathData="M298,50 L302,50 L302,70 L298,70 Z" /></group>
+
+        <!-- Small Ticks (Sample) -->
+        <group android:rotation="6" android:pivotX="300" android:pivotY="300"><path android:fillColor="#80FFFFFF" android:pathData="M299,50 L301,50 L301,60 L299,60 Z" /></group>
+        <group android:rotation="12" android:pivotX="300" android:pivotY="300"><path android:fillColor="#80FFFFFF" android:pathData="M299,50 L301,50 L301,60 L299,60 Z" /></group>
+        <group android:rotation="18" android:pivotX="300" android:pivotY="300"><path android:fillColor="#80FFFFFF" android:pathData="M299,50 L301,50 L301,60 L299,60 Z" /></group>
+        <group android:rotation="24" android:pivotX="300" android:pivotY="300"><path android:fillColor="#80FFFFFF" android:pathData="M299,50 L301,50 L301,60 L299,60 Z" /></group>
+
+    </group>
+
+    <!-- Numbers -->
+    <!-- 15 at Top (12 o'clock) -->
+    <group android:translateX="280" android:translateY="90">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M0,0 L4,0 L4,20 L0,20 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M10,0 L24,0 L24,4 L14,4 L14,8 L20,8 A4,4 0 0 1 24,12 L24,16 A4,4 0 0 1 20,20 L10,20 L10,16 L20,16 L20,12 L10,12 Z" />
+    </group>
+
+    <!-- 00 at Right (3 o'clock) -->
+    <group android:translateX="480" android:translateY="290">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M0,4 A4,4 0 0 1 4,0 L8,0 A4,4 0 0 1 12,4 L12,16 A4,4 0 0 1 8,20 L4,20 A4,4 0 0 1 0,16 Z M4,4 L4,16 L8,16 L8,4 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M16,4 A4,4 0 0 1 20,0 L24,0 A4,4 0 0 1 28,4 L28,16 A4,4 0 0 1 24,20 L20,20 A4,4 0 0 1 16,16 Z M20,4 L20,16 L24,16 L24,4 Z" />
+    </group>
+
+    <!-- 45 at Bottom (6 o'clock) -->
+    <group android:translateX="280" android:translateY="490">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M8,0 L8,20 L12,20 L12,0 Z M0,0 L4,0 L4,8 L12,8 L12,12 L0,12 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M16,0 L30,0 L30,4 L20,4 L20,8 L26,8 A4,4 0 0 1 30,12 L30,16 A4,4 0 0 1 26,20 L16,20 L16,16 L26,16 L26,12 L16,12 Z" />
+    </group>
+
+    <!-- 30 at Left (9 o'clock) -->
+    <group android:translateX="80" android:translateY="290">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M0,0 L12,0 L12,4 L4,4 L4,8 L8,8 A4,4 0 0 1 12,12 L12,16 A4,4 0 0 1 8,20 L0,20 L0,16 L8,16 L8,12 L0,12 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M16,4 A4,4 0 0 1 20,0 L24,0 A4,4 0 0 1 28,4 L28,16 A4,4 0 0 1 24,20 L20,20 A4,4 0 0 1 16,16 Z M20,4 L20,16 L24,16 L24,4 Z" />
+    </group>
+
+</vector>

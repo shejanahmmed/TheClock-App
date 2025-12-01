@@ -3,4 +3,13 @@
     <string name="menu_screen_saver">Screen Saver</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_help">Help</string>
+    <string name="silent">Silent</string>
+    <string name="off">Off</string>
+    <string name="snooze_summary_format">%1$d minutes, %2$d times</string>
+    <string name="ring_once">Ring once</string>
+    <string name="every_day">Every day</string>
+    <string name="alarm_default_label">Alarm</string>
+    <string name="minutes_format">%d minutes</string>
+    <string name="stopwatch_initial_time">00:00.00</string>
+    <string name="lap_number_format">#%d</string>
 </resources>

@@ -42,7 +42,7 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
                     behavior.setSkipCollapsed(true);
                     behavior.setPeekHeight(android.content.res.Resources.getSystem().getDisplayMetrics().heightPixels);
 
-                    if (d.getWindow() != null) {
+                    if (d.getWindow() != null && getContext() != null) {
                         d.getWindow().setNavigationBarColor(
                                 getContext().getResources().getColor(R.color.bottom_sheet_bg, null));
                     }
@@ -86,7 +86,7 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
                             if (getView() != null) {
                                 TextView tvRingtoneName = getView().findViewById(R.id.tv_ringtone_name);
                                 if (tvRingtoneName != null) {
-                                    tvRingtoneName.setText("Silent");
+                                    tvRingtoneName.setText(R.string.silent);
                                 }
                             }
                         }
@@ -97,6 +97,14 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
     private boolean snoozeEnabled = true;
     private int snoozeInterval = 5;
     private int snoozeTimes = 3;
+
+    private Alarm alarmToEdit;
+
+    public static AddAlarmBottomSheet newInstance(Alarm alarm) {
+        AddAlarmBottomSheet fragment = new AddAlarmBottomSheet();
+        fragment.alarmToEdit = alarm;
+        return fragment;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -118,50 +126,8 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
         android.widget.LinearLayout layoutSnooze = view.findViewById(R.id.layout_snooze);
         TextView tvSnoozeSummary = view.findViewById(R.id.tv_snooze_summary);
 
-        // Default ringtone
-        if (selectedRingtoneUri == null) {
-            android.net.Uri defaultUri = android.media.RingtoneManager
-                    .getDefaultUri(android.media.RingtoneManager.TYPE_ALARM);
-            if (defaultUri != null) {
-                selectedRingtoneUri = defaultUri.toString();
-                android.media.Ringtone ringtone = android.media.RingtoneManager.getRingtone(getContext(), defaultUri);
-                if (ringtone != null) {
-                    tvRingtoneName.setText(ringtone.getTitle(getContext()));
-                }
-            }
-        }
-
-        layoutRingtone.setOnClickListener(v -> {
-            android.content.Intent intent = new android.content.Intent(
-                    android.media.RingtoneManager.ACTION_RINGTONE_PICKER);
-            intent.putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_TYPE,
-                    android.media.RingtoneManager.TYPE_ALARM);
-            intent.putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Alarm Ringtone");
-            intent.putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
-                    selectedRingtoneUri != null && !selectedRingtoneUri.isEmpty()
-                            ? android.net.Uri.parse(selectedRingtoneUri)
-                            : (android.net.Uri) null);
-            ringtonePickerLauncher.launch(intent);
-        });
-
-        // Snooze Click Listener
-        layoutSnooze.setOnClickListener(v -> {
-            SnoozeBottomSheet snoozeSheet = SnoozeBottomSheet.newInstance(snoozeEnabled, snoozeInterval, snoozeTimes);
-            snoozeSheet.setOnSnoozeOptionsSelectedListener((enabled, interval, times) -> {
-                snoozeEnabled = enabled;
-                snoozeInterval = interval;
-                snoozeTimes = times;
-
-                if (snoozeEnabled) {
-                    tvSnoozeSummary.setText(interval + " minutes, " + times + " times");
-                    tvSnoozeSummary.setTextColor(android.graphics.Color.parseColor("#5C7CFA"));
-                } else {
-                    tvSnoozeSummary.setText("Off");
-                    tvSnoozeSummary.setTextColor(getContext().getResources().getColor(android.R.color.white, null));
-                }
-            });
-            snoozeSheet.show(getParentFragmentManager(), "SnoozeBottomSheet");
-        });
+        TextView tvRingIn = view.findViewById(R.id.tv_ring_in);
+        android.widget.EditText etAlarmName = view.findViewById(R.id.et_alarm_name);
 
         // Day TextViews
         TextView tvSun = view.findViewById(R.id.tv_sun);
@@ -177,55 +143,66 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
 
         java.util.Set<Integer> selectedDays = new java.util.HashSet<>();
 
-        TextView tvRingIn = view.findViewById(R.id.tv_ring_in);
-        android.widget.EditText etAlarmName = view.findViewById(R.id.et_alarm_name);
+        // Pre-fill data if editing
+        if (alarmToEdit != null) {
+            timePicker.setHour(alarmToEdit.getHour());
+            timePicker.setMinute(alarmToEdit.getMinute());
+            etAlarmName.setText(alarmToEdit.getLabel());
+
+            if (alarmToEdit.isRecurring() && !alarmToEdit.getDays().isEmpty()) {
+                selectedDays.addAll(alarmToEdit.getDays());
+                layoutRepeat.setVisibility(View.VISIBLE);
+                btnRingOnce.setBackgroundResource(R.drawable.btn_pill_unselected);
+                btnCustom.setBackgroundResource(R.drawable.btn_pill_selected);
+            } else {
+                layoutRepeat.setVisibility(View.GONE);
+                btnRingOnce.setBackgroundResource(R.drawable.btn_pill_selected);
+                btnCustom.setBackgroundResource(R.drawable.btn_pill_unselected);
+            }
+
+            selectedRingtoneUri = alarmToEdit.getRingtoneUri();
+            snoozeEnabled = alarmToEdit.isSnoozeEnabled();
+            snoozeInterval = alarmToEdit.getSnoozeInterval();
+            snoozeTimes = alarmToEdit.getSnoozeTimes();
+        }
+
+        // Default ringtone logic (only if not editing or if editing but no ringtone set
+        // yet)
+        if (selectedRingtoneUri == null) {
+            android.net.Uri defaultUri = android.media.RingtoneManager
+                    .getDefaultUri(android.media.RingtoneManager.TYPE_ALARM);
+            if (defaultUri != null) {
+                selectedRingtoneUri = defaultUri.toString();
+            }
+        }
+
+        // Update Ringtone Text
+        if (selectedRingtoneUri != null && !selectedRingtoneUri.isEmpty()) {
+            android.media.Ringtone ringtone = android.media.RingtoneManager.getRingtone(getContext(),
+                    android.net.Uri.parse(selectedRingtoneUri));
+            if (ringtone != null) {
+                tvRingtoneName.setText(ringtone.getTitle(getContext()));
+            }
+        } else {
+            tvRingtoneName.setText(R.string.silent);
+        }
+
+        // Update Snooze Text
+        if (snoozeEnabled) {
+            tvSnoozeSummary.setText(getString(R.string.snooze_summary_format, snoozeInterval, snoozeTimes));
+            tvSnoozeSummary.setTextColor(android.graphics.Color.parseColor("#5C7CFA"));
+        } else {
+            tvSnoozeSummary.setText(R.string.off);
+            if (getContext() != null) {
+                tvSnoozeSummary.setTextColor(getContext().getResources().getColor(android.R.color.white, null));
+            }
+        }
 
         // Helper to update "Ring in..." text
         Runnable updateNextAlarmTime = () -> {
             int hour = timePicker.getHour();
             int minute = timePicker.getMinute();
-            java.util.Calendar now = java.util.Calendar.getInstance();
-            java.util.Calendar alarmTime = java.util.Calendar.getInstance();
-            alarmTime.set(java.util.Calendar.HOUR_OF_DAY, hour);
-            alarmTime.set(java.util.Calendar.MINUTE, minute);
-            alarmTime.set(java.util.Calendar.SECOND, 0);
-            alarmTime.set(java.util.Calendar.MILLISECOND, 0);
-
-            if (layoutRepeat.getVisibility() == View.GONE || selectedDays.isEmpty()) {
-                // Ring once
-                if (alarmTime.before(now)) {
-                    alarmTime.add(java.util.Calendar.DAY_OF_YEAR, 1);
-                }
-            } else {
-                // Recurring
-                // Find next occurrence
-                while (alarmTime.before(now) || !selectedDays.contains(alarmTime.get(java.util.Calendar.DAY_OF_WEEK))) {
-                    alarmTime.add(java.util.Calendar.DAY_OF_YEAR, 1);
-                    // Safety break to prevent infinite loop if logic fails (though shouldn't with
-                    // valid days)
-                    if (alarmTime.getTimeInMillis() - now.getTimeInMillis() > 8 * 24 * 60 * 60 * 1000L)
-                        break;
-                }
-            }
-
-            long diff = alarmTime.getTimeInMillis() - now.getTimeInMillis();
-            long days = java.util.concurrent.TimeUnit.MILLISECONDS.toDays(diff);
-            long hours = java.util.concurrent.TimeUnit.MILLISECONDS.toHours(diff) % 24;
-            long minutes = java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(diff) % 60;
-
-            StringBuilder sb = new StringBuilder("Ring in ");
-            if (days > 0) {
-                sb.append(days).append(" day").append(days > 1 ? "s" : "");
-            } else if (hours > 0) {
-                sb.append(hours).append(" hour").append(hours > 1 ? "s" : "");
-                if (minutes > 0)
-                    sb.append(" ").append(minutes).append(" minute").append(minutes > 1 ? "s" : "");
-            } else {
-                sb.append(minutes).append(" minute").append(minutes > 1 ? "s" : "");
-                if (minutes == 0)
-                    sb.append("less than a minute");
-            }
-            tvRingIn.setText(sb.toString());
+            tvRingIn.setText(calculateTimeDiff(hour, minute, selectedDays));
         };
 
         timePicker.setOnTimeChangedListener((view1, hourOfDay, minute) -> updateNextAlarmTime.run());
@@ -241,9 +218,9 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
             updateDayState(tvSat, java.util.Calendar.SATURDAY, selectedDays);
 
             if (selectedDays.isEmpty()) {
-                tvRepeatSummary.setText("Ring once");
+                tvRepeatSummary.setText(R.string.ring_once);
             } else if (selectedDays.size() == 7) {
-                tvRepeatSummary.setText("Every day");
+                tvRepeatSummary.setText(R.string.every_day);
             } else {
                 // Build summary string
                 java.util.List<Integer> sortedDays = new java.util.ArrayList<>(selectedDays);
@@ -272,6 +249,40 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
             updateUI.run();
         };
 
+        layoutRingtone.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(
+                    android.media.RingtoneManager.ACTION_RINGTONE_PICKER);
+            intent.putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_TYPE,
+                    android.media.RingtoneManager.TYPE_ALARM);
+            intent.putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Alarm Ringtone");
+            intent.putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                    selectedRingtoneUri != null && !selectedRingtoneUri.isEmpty()
+                            ? android.net.Uri.parse(selectedRingtoneUri)
+                            : null);
+            ringtonePickerLauncher.launch(intent);
+        });
+
+        // Snooze Click Listener
+        layoutSnooze.setOnClickListener(v -> {
+            SnoozeBottomSheet snoozeSheet = SnoozeBottomSheet.newInstance(snoozeEnabled, snoozeInterval, snoozeTimes);
+            snoozeSheet.setOnSnoozeOptionsSelectedListener((enabled, interval, times) -> {
+                snoozeEnabled = enabled;
+                snoozeInterval = interval;
+                snoozeTimes = times;
+
+                if (snoozeEnabled) {
+                    tvSnoozeSummary.setText(getString(R.string.snooze_summary_format, interval, times));
+                    tvSnoozeSummary.setTextColor(android.graphics.Color.parseColor("#5C7CFA"));
+                } else {
+                    tvSnoozeSummary.setText(R.string.off);
+                    if (getContext() != null) {
+                        tvSnoozeSummary.setTextColor(getContext().getResources().getColor(android.R.color.white, null));
+                    }
+                }
+            });
+            snoozeSheet.show(getParentFragmentManager(), "SnoozeBottomSheet");
+        });
+
         setupDayButton(tvSun, java.util.Calendar.SUNDAY, dayClickListener);
         setupDayButton(tvMon, java.util.Calendar.MONDAY, dayClickListener);
         setupDayButton(tvTue, java.util.Calendar.TUESDAY, dayClickListener);
@@ -287,7 +298,8 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
             btnRingOnce.setBackgroundResource(R.drawable.btn_pill_selected);
             btnCustom.setBackgroundResource(R.drawable.btn_pill_unselected);
             layoutRepeat.setVisibility(View.GONE);
-            updateNextAlarmTime.run();
+            selectedDays.clear();
+            updateUI.run();
         });
 
         btnCustom.setOnClickListener(v -> {
@@ -303,11 +315,22 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
             if (listener != null) {
                 int hour = timePicker.getHour();
                 int minute = timePicker.getMinute();
-                Alarm alarm = new Alarm(String.valueOf(System.currentTimeMillis()), hour, minute, true);
+
+                Alarm alarm;
+                if (alarmToEdit != null) {
+                    alarm = alarmToEdit;
+                    alarm.setHour(hour);
+                    alarm.setMinute(minute);
+                    alarm.setEnabled(true); // Re-enable on edit
+                } else {
+                    alarm = new Alarm(String.valueOf(System.currentTimeMillis()), hour, minute, true);
+                }
 
                 String label = etAlarmName.getText().toString();
                 if (!label.isEmpty()) {
                     alarm.setLabel(label);
+                } else {
+                    alarm.setLabel(getString(R.string.alarm_default_label));
                 }
 
                 if (layoutRepeat.getVisibility() == View.VISIBLE && !selectedDays.isEmpty()) {
@@ -370,5 +393,53 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
             default:
                 return "";
         }
+    }
+
+    private long calculateMillisToAlarm(int hour, int minute, java.util.Set<Integer> selectedDays) {
+        java.util.Calendar now = java.util.Calendar.getInstance();
+        java.util.Calendar alarmTime = java.util.Calendar.getInstance();
+        alarmTime.set(java.util.Calendar.HOUR_OF_DAY, hour);
+        alarmTime.set(java.util.Calendar.MINUTE, minute);
+        alarmTime.set(java.util.Calendar.SECOND, 0);
+        alarmTime.set(java.util.Calendar.MILLISECOND, 0);
+
+        if (selectedDays.isEmpty()) {
+            // Ring once
+            if (alarmTime.before(now)) {
+                alarmTime.add(java.util.Calendar.DAY_OF_YEAR, 1);
+            }
+        } else {
+            // Recurring
+            // Find next occurrence
+            while (alarmTime.before(now) || !selectedDays.contains(alarmTime.get(java.util.Calendar.DAY_OF_WEEK))) {
+                alarmTime.add(java.util.Calendar.DAY_OF_YEAR, 1);
+                // Safety break
+                if (alarmTime.getTimeInMillis() - now.getTimeInMillis() > 8 * 24 * 60 * 60 * 1000L)
+                    break;
+            }
+        }
+
+        return alarmTime.getTimeInMillis() - now.getTimeInMillis();
+    }
+
+    private String calculateTimeDiff(int hour, int minute, java.util.Set<Integer> selectedDays) {
+        long diff = calculateMillisToAlarm(hour, minute, selectedDays);
+        long days = java.util.concurrent.TimeUnit.MILLISECONDS.toDays(diff);
+        long hours = java.util.concurrent.TimeUnit.MILLISECONDS.toHours(diff) % 24;
+        long minutes = java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(diff) % 60;
+
+        StringBuilder sb = new StringBuilder("Ring in ");
+        if (days > 0) {
+            sb.append(days).append(" day").append(days > 1 ? "s" : "");
+        } else if (hours > 0) {
+            sb.append(hours).append(" hour").append(hours > 1 ? "s" : "");
+            if (minutes > 0)
+                sb.append(" ").append(minutes).append(" minute").append(minutes > 1 ? "s" : "");
+        } else {
+            sb.append(minutes).append(" minute").append(minutes > 1 ? "s" : "");
+            if (minutes == 0)
+                sb.append("less than a minute");
+        }
+        return sb.toString();
     }
 }

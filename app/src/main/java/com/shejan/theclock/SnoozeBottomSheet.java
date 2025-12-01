@@ -64,7 +64,8 @@ public class SnoozeBottomSheet extends BottomSheetDialogFragment {
 
                 if (d.getWindow() != null) {
                     d.getWindow()
-                            .setNavigationBarColor(getContext().getResources().getColor(R.color.bottom_sheet_bg, null));
+                            .setNavigationBarColor(
+                                    requireContext().getResources().getColor(R.color.bottom_sheet_bg, null));
                 }
             }
         });
@@ -88,7 +89,7 @@ public class SnoozeBottomSheet extends BottomSheetDialogFragment {
         // Initialize UI
         switchSnooze.setChecked(isSnoozeEnabled);
         updateOptionsVisibility(cardOptions, isSnoozeEnabled);
-        tvInterval.setText(interval + " minutes");
+        tvInterval.setText(getString(R.string.minutes_format, interval));
         tvTimes.setText(String.valueOf(times));
 
         btnBack.setOnClickListener(v -> dismiss());
@@ -115,9 +116,11 @@ public class SnoozeBottomSheet extends BottomSheetDialogFragment {
         PopupMenu popup = new PopupMenu(wrapper, anchor);
         int[] intervals = { 5, 10, 15, 20, 25, 30 };
         for (int i : intervals) {
-            popup.getMenu().add(i + " minutes");
+            popup.getMenu().add(getString(R.string.minutes_format, i));
         }
         popup.setOnMenuItemClickListener(item -> {
+            if (item.getTitle() == null)
+                return false;
             String title = item.getTitle().toString();
             interval = Integer.parseInt(title.split(" ")[0]);
             tvInterval.setText(title);
@@ -136,6 +139,8 @@ public class SnoozeBottomSheet extends BottomSheetDialogFragment {
             popup.getMenu().add(String.valueOf(t));
         }
         popup.setOnMenuItemClickListener(item -> {
+            if (item.getTitle() == null)
+                return false;
             times = Integer.parseInt(item.getTitle().toString());
             tvTimes.setText(String.valueOf(times));
             notifyListener();

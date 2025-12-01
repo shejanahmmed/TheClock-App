@@ -3,7 +3,7 @@ package com.shejan.theclock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
+import androidx.appcompat.widget.SwitchCompat;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,7 +14,25 @@ import java.util.Locale;
 
 public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder> {
 
-    private List<Alarm> alarmList;
+    private final List<Alarm> alarmList;
+    private OnAlarmClickListener listener;
+    private OnAlarmStatusChangedListener statusListener;
+
+    public interface OnAlarmClickListener {
+        void onAlarmClick(Alarm alarm);
+    }
+
+    public interface OnAlarmStatusChangedListener {
+        void onAlarmStatusChanged(Alarm alarm);
+    }
+
+    public void setOnAlarmClickListener(OnAlarmClickListener listener) {
+        this.listener = listener;
+    }
+
+    public void setOnAlarmStatusChangedListener(OnAlarmStatusChangedListener listener) {
+        this.statusListener = listener;
+    }
 
     public AlarmAdapter(List<Alarm> alarmList) {
         this.alarmList = alarmList;
@@ -61,10 +79,24 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         }
 
         holder.labelTextView.setText(sb.toString());
+        holder.alarmSwitch.setOnCheckedChangeListener(null);
         holder.alarmSwitch.setChecked(alarm.isEnabled());
-
         holder.alarmSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             alarm.setEnabled(isChecked);
+            if (isChecked) {
+                AlarmScheduler.schedule(holder.itemView.getContext(), alarm);
+            } else {
+                AlarmScheduler.cancel(holder.itemView.getContext(), alarm);
+            }
+            if (statusListener != null) {
+                statusListener.onAlarmStatusChanged(alarm);
+            }
+        });
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onAlarmClick(alarm);
+            }
         });
     }
 
@@ -98,7 +130,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         TextView timeTextView;
         TextView amPmTextView;
         TextView labelTextView;
-        Switch alarmSwitch;
+        SwitchCompat alarmSwitch;
 
         public AlarmViewHolder(@NonNull View itemView) {
             super(itemView);

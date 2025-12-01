@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="240dp"
+    android:height="240dp"
+    android:viewportWidth="240"
+    android:viewportHeight="240">
+    
+    <!-- Center is 120, 120 -->
+    <!-- Capsule needs to be on the "up" side (12 o'clock) because AnalogClock rotates clockwise from 12 -->
+    <!-- In ClockView, 0 degrees is usually 3 o'clock in standard math, but AnalogClock assumes 12. -->
+    <!-- Wait, AnalogClock rotates the drawable. Standard drawable orientation for 0 rotation is pointing UP. -->
+    
+    <!-- Capsule dimensions from ClockView:
+         r = size/2
+         capsuleRight = center + r (Outer edge)
+         capsuleLeft = center + 120f (Inner edge)
+         
+         So it extends from near center to the edge.
+         Since we want it pointing UP (12 o'clock), we swap X and Y logic.
+         It should extend from Y = center - 120 (approx) to Y = center - r.
+    -->
+    
+    <group>
+        <!-- Capsule Body: Black background -->
+        <!-- Center X = 120. Width = 20 (approx). -->
+        <!-- Let's say width is 20. -->
+        <!-- Y starts at 120 - 20 = 100 (inner) and goes to 10 (outer) -->
+        
+        <!-- Adjusting for visual similarity to screenshot/code -->
+        <!-- In code: capsuleHeight = 100f. This is the THICKNESS of the capsule? No, height usually means length? 
+             "boxRect.set(capsuleLeft, centerY - boxHalfHeight, capsuleRight, centerY + boxHalfHeight)"
+             So capsuleHeight is the THICKNESS (Y-dimension in horizontal mode).
+             Length is capsuleRight - capsuleLeft.
+        -->
+        
+        <!-- Let's translate to Vertical for AnalogClock -->
+        <!-- Thickness (X-dimension) = 30dp -->
+        <!-- Length (Y-dimension): From Y=100 to Y=20 -->
+        
+        <path
+            android:fillColor="#FF000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="2"
+            android:pathData="
+                M 105,100
+                L 105,35
+                A 15,15 0 0 1 135,35
+                L 135,100
+                A 15,15 0 0 1 105,100
+                Z" />
+                
+        <!-- 
+           M 105,100 : Start bottom-left of capsule (near center)
+           L 105,35  : Line up to top-left arc start
+           A 15,15 ... : Top arc (180 deg)
+           L 135,100 : Line down to bottom-right
+           A 15,15 ... : Bottom arc
+           Z
+        -->
+    </group>
+</vector>

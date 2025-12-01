@@ -19,6 +19,13 @@ public class MainActivity extends AppCompatActivity {
                     new WorldClockFragment()).commit();
             bottomNav.setSelectedItemId(R.id.navigation_world_clock);
         }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(
+                    android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[] { android.Manifest.permission.POST_NOTIFICATIONS }, 101);
+            }
+        }
     }
 
     private final com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener navListener = item -> {
@@ -44,6 +51,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         getMenuInflater().inflate(R.menu.home_menu, menu);
+
+        android.content.SharedPreferences prefs = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
+        boolean is24Hour = prefs.getBoolean("use_24_hour_format", false);
+        android.view.MenuItem toggleItem = menu.findItem(R.id.action_toggle_format);
+        if (toggleItem != null) {
+            toggleItem.setChecked(is24Hour);
+        }
+
         return true;
     }
 
@@ -59,6 +74,20 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.action_help) {
             android.widget.Toast.makeText(this, "Help clicked", android.widget.Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (id == R.id.action_toggle_format) {
+            boolean isChecked = !item.isChecked();
+            item.setChecked(isChecked);
+
+            android.content.SharedPreferences prefs = getSharedPreferences(getPackageName() + "_preferences",
+                    MODE_PRIVATE);
+            prefs.edit().putBoolean("use_24_hour_format", isChecked).apply();
+
+            androidx.fragment.app.Fragment fragment = getSupportFragmentManager()
+                    .findFragmentById(R.id.fragment_container);
+            if (fragment instanceof WorldClockFragment) {
+                ((WorldClockFragment) fragment).updateClockFormat(isChecked);
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);

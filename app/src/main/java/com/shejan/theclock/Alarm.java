@@ -11,7 +11,11 @@ public class Alarm {
     private String label;
     private boolean isRecurring;
     private List<Integer> days; // Calendar.SUNDAY, etc.
-    private boolean isAm; // Helper for display if needed, though usually calculated
+
+    public Alarm() {
+        this.days = new ArrayList<>();
+        this.label = "Alarm";
+    }
 
     public Alarm(String id, int hour, int minute, boolean isEnabled) {
         this.id = id;
@@ -20,6 +24,10 @@ public class Alarm {
         this.isEnabled = isEnabled;
         this.days = new ArrayList<>();
         this.label = "Alarm";
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getId() {

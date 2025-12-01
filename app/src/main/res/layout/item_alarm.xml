@@ -61,12 +61,12 @@
 
         </LinearLayout>
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/alarm_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:thumbTint="@color/white"
-            android:trackTint="@color/teal_200" />
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color" />
 
     </LinearLayout>
 
