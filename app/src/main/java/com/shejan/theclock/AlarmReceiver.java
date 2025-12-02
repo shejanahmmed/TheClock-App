@@ -57,66 +57,27 @@ public class AlarmReceiver extends BroadcastReceiver {
             return;
         }
 
-        // Create notification channel
-        createNotificationChannel(context);
-
-        // Start RingtoneService
+        // Start RingtoneService as Foreground Service
         Intent serviceIntent = new Intent(context, RingtoneService.class);
+        serviceIntent.putExtra("ALARM_ID", alarmId);
+        serviceIntent.putExtra("ALARM_LABEL", label);
         serviceIntent.putExtra("ALARM_RINGTONE", ringtoneUriString);
-        context.startService(serviceIntent);
+        serviceIntent.putExtra("ALARM_SNOOZE_ENABLED", snoozeEnabled);
+        serviceIntent.putExtra("ALARM_SNOOZE_INTERVAL", snoozeInterval);
+        serviceIntent.putExtra("ALARM_SNOOZE_TIMES", snoozeTimes);
 
-        // Create Stop PendingIntent
-        Intent stopIntent = new Intent(context, AlarmReceiver.class);
-        stopIntent.setAction("STOP_RINGTONE");
-        PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        androidx.core.content.ContextCompat.startForegroundService(context, serviceIntent);
 
-        // Create Snooze PendingIntent
-        PendingIntent snoozePendingIntent = null;
-        if (snoozeEnabled && snoozeTimes > 0) {
-            Intent snoozeIntent = new Intent(context, AlarmReceiver.class);
-            snoozeIntent.setAction("SNOOZE_RINGTONE");
-            snoozeIntent.putExtra("ALARM_ID", alarmId);
-            snoozeIntent.putExtra("ALARM_LABEL", label);
-            snoozeIntent.putExtra("ALARM_RINGTONE", ringtoneUriString);
-            snoozeIntent.putExtra("ALARM_SNOOZE_ENABLED", true);
-            snoozeIntent.putExtra("ALARM_SNOOZE_INTERVAL", snoozeInterval);
-            snoozeIntent.putExtra("ALARM_SNOOZE_TIMES", snoozeTimes);
-
-            // Use a unique request code for snooze pending intent
-            snoozePendingIntent = PendingIntent.getBroadcast(context, 1, snoozeIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        // Reschedule if recurring
+        if (alarmId != null) {
+            java.util.List<Alarm> alarms = AlarmRepository.loadAlarms(context);
+            for (Alarm alarm : alarms) {
+                if (alarm.getId().equals(alarmId) && alarm.isRecurring() && alarm.isEnabled()) {
+                    AlarmScheduler.schedule(context, alarm);
+                    break;
+                }
+            }
         }
-
-        // Build notification
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("h:mm a", java.util.Locale.getDefault());
-        String currentTime = sdf.format(new java.util.Date());
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_launcher) // Ensure this icon exists
-                .setContentTitle(currentTime)
-                .setContentText("Alarm ringing")
-                .setPriority(NotificationCompat.PRIORITY_MAX) // MAX for heads-up
-                .setCategory(NotificationCompat.CATEGORY_ALARM)
-                .setAutoCancel(true)
-                .setOngoing(true) // Make it ongoing so it doesn't just swipe away without stopping sound easily
-                .setVibrate(new long[] { 0, 1000, 1000, 1000, 1000 });
-
-        if (snoozePendingIntent != null) {
-            builder.addAction(R.drawable.ic_timer, "Snooze", snoozePendingIntent);
-        }
-
-        builder.addAction(R.drawable.ic_alarm, "Stop", stopPendingIntent);
-
-        // Full screen intent (optional, for now just notification)
-        Intent fullScreenIntent = new Intent(context, MainActivity.class);
-        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0,
-                fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        builder.setFullScreenIntent(fullScreenPendingIntent, true);
-        NotificationManager notificationManager = (NotificationManager) context
-                .getSystemService(Context.NOTIFICATION_SERVICE);
-        int notificationId = alarmId != null ? alarmId.hashCode() : 0;
-        notificationManager.notify(notificationId, builder.build());
     }
 
     private void createNotificationChannel(Context context) {

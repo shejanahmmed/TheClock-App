@@ -26,6 +26,28 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[] { android.Manifest.permission.POST_NOTIFICATIONS }, 101);
             }
         }
+
+        checkExactAlarmPermission();
+    }
+
+    private void checkExactAlarmPermission() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            android.app.AlarmManager alarmManager = (android.app.AlarmManager) getSystemService(
+                    android.content.Context.ALARM_SERVICE);
+            if (!alarmManager.canScheduleExactAlarms()) {
+                new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("Permission Required")
+                        .setMessage(
+                                "To ensure alarms ring precisely and show the alarm icon, please grant the 'Alarms & reminders' permission.")
+                        .setPositiveButton("Grant", (dialog, which) -> {
+                            android.content.Intent intent = new android.content.Intent(
+                                    android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                            startActivity(intent);
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            }
+        }
     }
 
     private final com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener navListener = item -> {

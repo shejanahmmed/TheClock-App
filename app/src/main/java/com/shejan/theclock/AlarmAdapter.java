@@ -87,6 +87,12 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                 AlarmScheduler.schedule(holder.itemView.getContext(), alarm);
             } else {
                 AlarmScheduler.cancel(holder.itemView.getContext(), alarm);
+                if (alarm.getId().equals(RingtoneService.currentRingingAlarmId)) {
+                    android.content.Intent stopIntent = new android.content.Intent(holder.itemView.getContext(),
+                            AlarmReceiver.class);
+                    stopIntent.setAction("STOP_RINGTONE");
+                    holder.itemView.getContext().sendBroadcast(stopIntent);
+                }
             }
             if (statusListener != null) {
                 statusListener.onAlarmStatusChanged(alarm);

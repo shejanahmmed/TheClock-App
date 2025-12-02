@@ -46,7 +46,18 @@ public class AlarmScheduler {
 
         AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(),
                 showOperation);
-        alarmManager.setAlarmClock(alarmClockInfo, pendingIntent);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            if (alarmManager.canScheduleExactAlarms()) {
+                alarmManager.setAlarmClock(alarmClockInfo, pendingIntent);
+            } else {
+                // Fallback or prompt user (for now, just log or skip to avoid crash)
+                // Ideally, we should prompt the user to grant permission in Settings
+                android.util.Log.e("AlarmScheduler", "Exact alarm permission missing");
+            }
+        } else {
+            alarmManager.setAlarmClock(alarmClockInfo, pendingIntent);
+        }
     }
 
     private static Intent createAlarmIntent(Context context, Alarm alarm) {
