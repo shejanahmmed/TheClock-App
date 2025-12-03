@@ -79,6 +79,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         getMenuInflater().inflate(R.menu.home_menu, menu);
 
+        if (menu instanceof androidx.appcompat.view.menu.MenuBuilder) {
+            ((androidx.appcompat.view.menu.MenuBuilder) menu).setOptionalIconsVisible(true);
+        }
+
         android.content.SharedPreferences prefs = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         boolean is24Hour = prefs.getBoolean("use_24_hour_format", false);
         android.view.MenuItem toggleItem = menu.findItem(R.id.action_toggle_format);
@@ -93,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@androidx.annotation.NonNull android.view.MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_screen_saver) {
-            android.widget.Toast.makeText(this, "Screen Saver clicked", android.widget.Toast.LENGTH_SHORT).show();
+            android.content.Intent intent = new android.content.Intent(this, ScreenSaverActivity.class);
+            startActivity(intent);
             return true;
         } else if (id == R.id.action_settings) {
             android.content.Intent intent = new android.content.Intent(this, SettingsActivity.class);
@@ -101,6 +106,15 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.action_help) {
             android.widget.Toast.makeText(this, "Help clicked", android.widget.Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (id == R.id.action_releases) {
+            android.content.Intent browserIntent = new android.content.Intent(android.content.Intent.ACTION_VIEW,
+                    android.net.Uri.parse("https://github.com/shejanahmmed/TheClock-App/releases"));
+            startActivity(browserIntent);
+            return true;
+        } else if (id == R.id.action_about) {
+            android.content.Intent intent = new android.content.Intent(this, AboutActivity.class);
+            startActivity(intent);
             return true;
         } else if (id == R.id.action_toggle_format) {
             boolean isChecked = !item.isChecked();

@@ -69,4 +69,20 @@
         <item name="android:numbersTextColor">@color/white</item>
         <item name="android:numbersBackgroundColor">@color/black</item>
     </style>
+
+    <style name="Theme.TheClock.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="colorSurface">@color/light_black</item>
+        <item name="colorPrimary">@color/teal_200</item>
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">#DDFFFFFF</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.MaterialComponents.Button.TextButton.Dialog</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.MaterialComponents.Button.TextButton.Dialog</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.TheClock.Dialog</item>
+    </style>
+
+    <style name="ShapeAppearance.TheClock.Dialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
 </resources>

@@ -30,9 +30,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+
         <activity
             android:name=".SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TheClock.NoActionBar"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".ScreenSaverActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TheClock.NoActionBar"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".AboutActivity"
             android:exported="false"
             android:theme="@style/Theme.TheClock.NoActionBar"
             android:parentActivityName=".MainActivity" />
@@ -41,6 +53,7 @@
             android:name=".AlarmReceiver"
             android:enabled="true"
             android:exported="false" />
+        
 
         <service
             android:name=".RingtoneService"

@@ -59,9 +59,29 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
     private String selectedRingtoneUri;
     private androidx.activity.result.ActivityResultLauncher<android.content.Intent> ringtonePickerLauncher;
 
+    private boolean snoozeEnabled = true;
+    private int snoozeInterval = 5;
+    private int snoozeTimes = 3;
+
+    private Alarm alarmToEdit;
+
+    public static AddAlarmBottomSheet newInstance(Alarm alarm) {
+        AddAlarmBottomSheet fragment = new AddAlarmBottomSheet();
+        fragment.alarmToEdit = alarm;
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Load default snooze interval from settings
+        if (getContext() != null) {
+            android.content.SharedPreferences prefs = getContext().getSharedPreferences("Settings",
+                    android.content.Context.MODE_PRIVATE);
+            snoozeInterval = prefs.getInt("snooze_length", 5);
+        }
+
         ringtonePickerLauncher = registerForActivityResult(
                 new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -92,18 +112,6 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
                         }
                     }
                 });
-    }
-
-    private boolean snoozeEnabled = true;
-    private int snoozeInterval = 5;
-    private int snoozeTimes = 3;
-
-    private Alarm alarmToEdit;
-
-    public static AddAlarmBottomSheet newInstance(Alarm alarm) {
-        AddAlarmBottomSheet fragment = new AddAlarmBottomSheet();
-        fragment.alarmToEdit = alarm;
-        return fragment;
     }
 
     @Override
@@ -283,13 +291,40 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
             snoozeSheet.show(getParentFragmentManager(), "SnoozeBottomSheet");
         });
 
-        setupDayButton(tvSun, java.util.Calendar.SUNDAY, dayClickListener);
-        setupDayButton(tvMon, java.util.Calendar.MONDAY, dayClickListener);
-        setupDayButton(tvTue, java.util.Calendar.TUESDAY, dayClickListener);
-        setupDayButton(tvWed, java.util.Calendar.WEDNESDAY, dayClickListener);
-        setupDayButton(tvThu, java.util.Calendar.THURSDAY, dayClickListener);
-        setupDayButton(tvFri, java.util.Calendar.FRIDAY, dayClickListener);
-        setupDayButton(tvSat, java.util.Calendar.SATURDAY, dayClickListener);
+        // Read start week on preference
+        int startWeekOn = java.util.Calendar.SUNDAY;
+        if (getContext() != null) {
+            android.content.SharedPreferences prefs = getContext().getSharedPreferences("Settings",
+                    android.content.Context.MODE_PRIVATE);
+            startWeekOn = prefs.getInt("start_week_on", java.util.Calendar.SUNDAY);
+        }
+
+        // Determine day order dynamically
+        int[] dayOrder = new int[7];
+        for (int i = 0; i < 7; i++) {
+            int day = (startWeekOn + i) % 7;
+            if (day == 0)
+                day = 7; // Adjust for Calendar constants (Sun=1, ..., Sat=7)
+            dayOrder[i] = day;
+        }
+
+        // Map TextViews to days dynamically
+        setupDayButton(tvSun, dayOrder[0], dayClickListener);
+        setupDayButton(tvMon, dayOrder[1], dayClickListener);
+        setupDayButton(tvTue, dayOrder[2], dayClickListener);
+        setupDayButton(tvWed, dayOrder[3], dayClickListener);
+        setupDayButton(tvThu, dayOrder[4], dayClickListener);
+        setupDayButton(tvFri, dayOrder[5], dayClickListener);
+        setupDayButton(tvSat, dayOrder[6], dayClickListener);
+
+        // Update text of buttons to match the day
+        tvSun.setText(getDayInitial(dayOrder[0]));
+        tvMon.setText(getDayInitial(dayOrder[1]));
+        tvTue.setText(getDayInitial(dayOrder[2]));
+        tvWed.setText(getDayInitial(dayOrder[3]));
+        tvThu.setText(getDayInitial(dayOrder[4]));
+        tvFri.setText(getDayInitial(dayOrder[5]));
+        tvSat.setText(getDayInitial(dayOrder[6]));
 
         // Initial state
         updateUI.run();
@@ -390,6 +425,27 @@ public class AddAlarmBottomSheet extends BottomSheetDialogFragment {
                 return "Fri";
             case java.util.Calendar.SATURDAY:
                 return "Sat";
+            default:
+                return "";
+        }
+    }
+
+    private String getDayInitial(int day) {
+        switch (day) {
+            case java.util.Calendar.SUNDAY:
+                return "S";
+            case java.util.Calendar.MONDAY:
+                return "M";
+            case java.util.Calendar.TUESDAY:
+                return "T";
+            case java.util.Calendar.WEDNESDAY:
+                return "W";
+            case java.util.Calendar.THURSDAY:
+                return "T";
+            case java.util.Calendar.FRIDAY:
+                return "F";
+            case java.util.Calendar.SATURDAY:
+                return "S";
             default:
                 return "";
         }

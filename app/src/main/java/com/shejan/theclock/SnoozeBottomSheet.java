@@ -114,7 +114,7 @@ public class SnoozeBottomSheet extends BottomSheetDialogFragment {
         android.view.ContextThemeWrapper wrapper = new android.view.ContextThemeWrapper(getContext(),
                 R.style.Theme_TheClock_PopupMenuWrapper);
         PopupMenu popup = new PopupMenu(wrapper, anchor);
-        int[] intervals = { 5, 10, 15, 20, 25, 30 };
+        int[] intervals = { 1, 2, 3, 4, 5, 10, 15, 20, 25, 30 };
         for (int i : intervals) {
             popup.getMenu().add(getString(R.string.minutes_format, i));
         }

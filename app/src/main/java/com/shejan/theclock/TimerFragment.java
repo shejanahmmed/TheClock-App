@@ -172,6 +172,26 @@ public class TimerFragment extends Fragment {
                 fabPauseResume.setVisibility(View.INVISIBLE);
                 // Show alert or play sound
                 Toast.makeText(getContext(), "Timer Finished!", Toast.LENGTH_LONG).show();
+                playTimerSound();
+
+                // Vibrate if enabled
+                if (getContext() != null) {
+                    android.content.SharedPreferences prefs = getContext().getSharedPreferences("Settings",
+                            android.content.Context.MODE_PRIVATE);
+                    boolean isVibrationEnabled = prefs.getBoolean("timer_vibration", true);
+                    if (isVibrationEnabled) {
+                        android.os.Vibrator vibrator = (android.os.Vibrator) getContext()
+                                .getSystemService(android.content.Context.VIBRATOR_SERVICE);
+                        if (vibrator != null) {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                vibrator.vibrate(android.os.VibrationEffect.createOneShot(500,
+                                        android.os.VibrationEffect.DEFAULT_AMPLITUDE));
+                            } else {
+                                vibrator.vibrate(500);
+                            }
+                        }
+                    }
+                }
             }
         }.start();
 
@@ -217,6 +237,35 @@ public class TimerFragment extends Fragment {
         super.onDestroyView();
         if (countDownTimer != null) {
             countDownTimer.cancel();
+        }
+    }
+
+    private void playTimerSound() {
+        android.content.SharedPreferences prefs = requireContext().getSharedPreferences("Settings",
+                android.content.Context.MODE_PRIVATE);
+        String sound = prefs.getString("timer_sound", "Beep");
+
+        if (sound.equals("Beep")) {
+            android.media.ToneGenerator toneGen = new android.media.ToneGenerator(
+                    android.media.AudioManager.STREAM_ALARM, 100);
+            toneGen.startTone(android.media.ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 2000); // 2 seconds beep
+        } else if (sound.equals("Alarm")) {
+            android.net.Uri alarmUri = android.media.RingtoneManager
+                    .getDefaultUri(android.media.RingtoneManager.TYPE_ALARM);
+            if (alarmUri == null) {
+                alarmUri = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION);
+            }
+            android.media.Ringtone ringtone = android.media.RingtoneManager.getRingtone(getContext(), alarmUri);
+            if (ringtone != null) {
+                ringtone.play();
+            }
+        } else if (sound.equals("Notification")) {
+            android.net.Uri notificationUri = android.media.RingtoneManager
+                    .getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION);
+            android.media.Ringtone ringtone = android.media.RingtoneManager.getRingtone(getContext(), notificationUri);
+            if (ringtone != null) {
+                ringtone.play();
+            }
         }
     }
 }

@@ -22,6 +22,14 @@ public class RingtoneService extends Service {
         return null;
     }
 
+    private android.os.Handler silenceHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable silenceRunnable = new Runnable() {
+        @Override
+        public void run() {
+            stopSelf();
+        }
+    };
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String alarmId = intent.getStringExtra("ALARM_ID");
@@ -117,6 +125,13 @@ public class RingtoneService extends Service {
             mediaPlayer.start();
         }
 
+        // Schedule auto-silence
+        android.content.SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        int silenceAfterMinutes = prefs.getInt("silence_after", 10);
+        if (silenceAfterMinutes > 0) {
+            silenceHandler.postDelayed(silenceRunnable, silenceAfterMinutes * 60 * 1000L);
+        }
+
         return START_NOT_STICKY;
     }
 
@@ -141,6 +156,9 @@ public class RingtoneService extends Service {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
+        }
+        if (silenceHandler != null) {
+            silenceHandler.removeCallbacks(silenceRunnable);
         }
     }
 }
