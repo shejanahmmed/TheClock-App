@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new WorldClockFragment()).commit();
             bottomNav.setSelectedItemId(R.id.navigation_world_clock);
+            setTitle("World Clock");
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
@@ -55,12 +56,16 @@ public class MainActivity extends AppCompatActivity {
         int itemId = item.getItemId();
         if (itemId == R.id.navigation_alarm) {
             selectedFragment = new AlarmFragment();
+            setTitle("Alarm");
         } else if (itemId == R.id.navigation_world_clock) {
             selectedFragment = new WorldClockFragment();
+            setTitle("World Clock");
         } else if (itemId == R.id.navigation_timer) {
             selectedFragment = new TimerFragment();
+            setTitle("Timer");
         } else if (itemId == R.id.navigation_stopwatch) {
             selectedFragment = new StopwatchFragment();
+            setTitle("Stopwatch");
         }
 
         if (selectedFragment != null) {
