@@ -117,9 +117,8 @@ public class ClockWidgetProvider extends AppWidgetProvider {
 
         long triggerAtMillis = calendar.getTimeInMillis();
 
-        // Use setAlarmClock for exact timing visible to user (icon might appear)
-        AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(triggerAtMillis, pendingIntent);
-        alarmManager.setAlarmClock(info, pendingIntent);
+        // Use setExact to avoid showing the alarm icon
+        alarmManager.setExact(AlarmManager.RTC, triggerAtMillis, pendingIntent);
     }
 
     private void cancelUpdate(Context context) {

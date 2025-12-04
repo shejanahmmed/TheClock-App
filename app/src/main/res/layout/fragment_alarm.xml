@@ -7,24 +7,14 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/header_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Alarm"
-        android:textColor="@android:color/white"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        android:layout_marginTop="24dp" />
-
-    <TextView
         android:id="@+id/header_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#88FFFFFF"
         android:textSize="14sp"
         android:visibility="gone"
-        android:layout_below="@id/header_title"
-        android:layout_marginTop="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="24dp"
         android:layout_marginBottom="24dp" />
 
     <androidx.recyclerview.widget.RecyclerView
