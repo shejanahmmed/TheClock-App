@@ -49,6 +49,21 @@
             android:theme="@style/Theme.TheClock.NoActionBar"
             android:parentActivityName=".MainActivity" />
 
+        <activity
+            android:name=".RingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TheClock.NoActionBar"
+            android:showOnLockScreen="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".HelpActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TheClock.NoActionBar"
+            android:parentActivityName=".MainActivity" />
+
         <receiver
             android:name=".AlarmReceiver"
             android:enabled="true"

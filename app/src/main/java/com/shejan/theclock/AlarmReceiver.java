@@ -17,7 +17,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private static final String CHANNEL_NAME = "Alarms";
 
     @SuppressLint("UseFullScreenIntent")
-    @Override
+     @Override
     public void onReceive(Context context, Intent intent) {
         if ("STOP_RINGTONE".equals(intent.getAction())) {
             Intent serviceIntent = new Intent(context, RingtoneService.class);

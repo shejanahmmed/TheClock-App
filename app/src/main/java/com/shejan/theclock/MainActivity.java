@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         } else if (id == R.id.action_help) {
-            android.widget.Toast.makeText(this, "Help clicked", android.widget.Toast.LENGTH_SHORT).show();
+            android.content.Intent intent = new android.content.Intent(this, HelpActivity.class);
+            startActivity(intent);
             return true;
         } else if (id == R.id.action_releases) {
             android.content.Intent browserIntent = new android.content.Intent(android.content.Intent.ACTION_VIEW,

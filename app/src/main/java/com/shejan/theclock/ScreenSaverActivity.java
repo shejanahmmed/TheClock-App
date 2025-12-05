@@ -44,6 +44,7 @@ public class ScreenSaverActivity extends AppCompatActivity {
                                 });
 
                 View rootView = findViewById(android.R.id.content);
+                rootView.setKeepScreenOn(true); // Ensure screen stays awake
                 rootView.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View v, android.view.MotionEvent event) {

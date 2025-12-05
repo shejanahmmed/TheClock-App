@@ -87,11 +87,26 @@ public class RingtoneService extends Service {
 
         builder.addAction(R.drawable.ic_alarm, "Stop", stopPendingIntent);
 
-        // Full screen intent
-        Intent fullScreenIntent = new Intent(this, MainActivity.class);
+        Intent fullScreenIntent = new Intent(this, RingActivity.class);
+        fullScreenIntent.putExtra("ALARM_ID", alarmId);
+        fullScreenIntent.putExtra("ALARM_LABEL", label);
+        fullScreenIntent.putExtra("ALARM_RINGTONE", ringtoneUriString);
+        fullScreenIntent.putExtra("ALARM_SNOOZE_ENABLED", snoozeEnabled);
+        fullScreenIntent.putExtra("ALARM_SNOOZE_INTERVAL", snoozeInterval);
+        fullScreenIntent.putExtra("ALARM_SNOOZE_TIMES", snoozeTimes);
+
+        // Flags are important for starting activity from background/service context
+        fullScreenIntent.setFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
         PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
                 fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         builder.setFullScreenIntent(fullScreenPendingIntent, true);
+
+        // Also start activity directly for devices that allow it, ensuring it pops up
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
+            startActivity(fullScreenIntent);
+        }
 
         int notificationId = alarmId != null ? alarmId.hashCode() : 1;
         startForeground(notificationId, builder.build());

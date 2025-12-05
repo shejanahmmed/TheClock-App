@@ -16,6 +16,9 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
+        // Set status bar color to match background
+        getWindow().setStatusBarColor(getResources().getColor(R.color.black, getTheme()));
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {

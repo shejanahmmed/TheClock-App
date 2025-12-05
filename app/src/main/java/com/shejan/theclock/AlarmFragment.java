@@ -260,7 +260,7 @@ public class AlarmFragment extends Fragment
             subtitle.setText(text);
             subtitle.setVisibility(View.VISIBLE);
         } else {
-            subtitle.setVisibility(View.GONE);
+            subtitle.setVisibility(View.INVISIBLE);
         }
     }
 
